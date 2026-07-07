@@ -189,7 +189,10 @@
         <div class="tab-pane fade" id="pane-pakai">
           <div class="alert alert-primary bg-primary bg-opacity-10 border-0 py-2 small d-flex align-items-center rounded-3">
             <i class="fas fa-info-circle fa-lg text-primary me-3"></i>
-            <div>Ketik jumlah terpakai pada kolom <strong>kuning</strong>. Tgl Pakai otomatis mengambil Tgl BKU jika kosong.</div>
+            <div>
+              Ketik jumlah terpakai pada kolom <strong>kuning</strong>. Tgl Pakai otomatis mengambil Tgl BKU jika kosong.<br>
+              <span class="text-primary fw-bold">Tips:</span> Jika dipakai lebih dari sekali, ketik gabungan tanggalnya (misal: <em>01-01-2026, 02-01-2026, 03-01-2026</em>) lalu ketik <strong>Total</strong> pemakaian di kolom kuning.
+            </div>
           </div>
           <div class="table-responsive table-container border rounded">
             <table class="table table-bordered table-sm mb-0" id="tabelPakai">
@@ -633,7 +636,11 @@
         <td contenteditable="true" class="text-center fw-bold ${editClass}" onblur="updateBeli(${index}, 'jml', this.innerText)">${item.jml}</td>
         <td contenteditable="true" class="text-end ${editClass}" onblur="updateBeli(${index}, 'harga', this.innerText)">${item.harga.toLocaleString('id-ID')}</td>
         <td class="text-end fw-bold bg-light">${item.realisasi.toLocaleString('id-ID')}</td>
-        <td class="text-center"><button class="btn btn-sm btn-danger py-0 px-2 shadow-sm" onclick="hapusBeli(${index})"><i class="fas fa-trash"></i></button></td>
+        <td class="text-center text-nowrap">
+          <button class="btn btn-sm btn-outline-secondary py-0 px-1 shadow-sm me-1" onclick="pindahBarisBeli(${index}, -1)" ${index === 0 ? 'disabled' : ''} title="Geser ke Atas"><i class="fas fa-arrow-up"></i></button>
+          <button class="btn btn-sm btn-outline-secondary py-0 px-1 shadow-sm me-1" onclick="pindahBarisBeli(${index}, 1)" ${index === appState.pembelian.length - 1 ? 'disabled' : ''} title="Geser ke Bawah"><i class="fas fa-arrow-down"></i></button>
+          <button class="btn btn-sm btn-danger py-0 px-2 shadow-sm" onclick="hapusBeli(${index})" title="Hapus"><i class="fas fa-trash"></i></button>
+        </td>
       `;
       tbody.appendChild(tr);
     });
@@ -649,6 +656,23 @@
     renderTabelPembelian(); renderTabelPemakaian();
   }
   window.hapusBeli = function(index) { if(confirm("Yakin ingin menghapus baris ini?")) { appState.pembelian.splice(index, 1); renderTabelPembelian(); renderTabelPemakaian(); } }
+  // FITUR: Memindahkan baris ke atas atau ke bawah
+  window.pindahBarisBeli = function(index, arah) {
+    // arah bernilai -1 (ke atas) atau 1 (ke bawah)
+    let targetIndex = index + arah;
+    
+    // Pastikan target index tidak melebihi batas jumlah data
+    if (targetIndex >= 0 && targetIndex < appState.pembelian.length) {
+      // Menukar posisi data di dalam memori (array)
+      let sementara = appState.pembelian[index];
+      appState.pembelian[index] = appState.pembelian[targetIndex];
+      appState.pembelian[targetIndex] = sementara;
+      
+      // Gambar ulang tabel agar perubahannya terlihat di layar
+      renderTabelPembelian(); 
+      renderTabelPemakaian();
+    }
+  }
   window.tambahBeliManual = function() {
     appState.pembelian.push({ tglBku: "01-01-2026", tglNota: "01-01-2026", kegiatan: "-", rekening: "5.1.02.01.01.", bukti: "-", idBarang: "-", uraian: "Ketikan Uraian", jml: 0, harga: 0, realisasi: 0 });
     renderTabelPembelian(); renderTabelPemakaian();
