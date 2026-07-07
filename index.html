@@ -5,52 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stock Opname BOSP - Waru</title>
   <link rel="icon" type="image/x-icon" href="https://upload.wikimedia.org/wikipedia/commons/8/84/Lambang_Daerah_Kab._Pamekasan%2C_Jawa_Timur.png">
-  
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-  
   <style>
-    :root { 
-      --primary-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); /* Deep Blue Elegant */
-      --accent-gold: #e5b85c; 
-      --bg-light: #f4f7f6;
-    }
-    
-    body { 
-      background-color: var(--bg-light); 
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
-      padding-top: 70px; 
-      padding-bottom: 90px; /* Ruang agar tabel tidak tertutup footer */
-    }
-    
-    /* Navbar & Header */
+    :root { --primary-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); --accent-gold: #e5b85c; --bg-light: #f4f7f6; }
+    body { background-color: var(--bg-light); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; padding-top: 70px; padding-bottom: 90px; }
     .navbar { background: var(--primary-gradient); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
     .text-gold { color: var(--accent-gold) !important; }
-    
-    /* Card Design */
-    .card { 
-      border: none; 
-      border-radius: 12px; 
-      box-shadow: 0 8px 25px rgba(0,0,0,0.03); 
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-    }
-    
-    /* Nav Tabs Custom */
+    .card { border: none; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.03); background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
     .nav-tabs { border-bottom: 2px solid #e9ecef; flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; white-space: nowrap; }
     .nav-tabs::-webkit-scrollbar { height: 4px; }
     .nav-tabs::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
     .nav-tabs .nav-link { color: #64748b; font-weight: 600; border: none; padding: 12px 20px; transition: all 0.3s ease; }
     .nav-tabs .nav-link:hover { color: #1e3c72; }
     .nav-tabs .nav-link.active { color: #198754; font-weight: bold; border-bottom: 3px solid var(--accent-gold); background: transparent; }
-    
-    /* Table Responsive & Sticky Header */
     .table-container { max-height: 55vh; overflow-y: auto; background: white; border-radius: 8px; box-shadow: inset 0 0 5px rgba(0,0,0,0.02); }
     .table-container::-webkit-scrollbar { width: 8px; height: 8px; }
     .table-container::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
@@ -58,77 +31,23 @@
     .table tbody td { font-size: 0.85rem; vertical-align: middle; }
     td[contenteditable="true"] { background-color: #fff; border: 1px dashed var(--accent-gold); outline: none; cursor: text; transition: all 0.2s; }
     td[contenteditable="true"]:focus { background-color: #fefce8; border: 2px solid #3b82f6; border-radius: 4px; }
-    
-    /* Sticky Footer Glassmorphism */
-    .sticky-footer { 
-      position: fixed; 
-      bottom: 0; 
-      left: 0; 
-      right: 0; 
-      background: rgba(255, 255, 255, 0.85); 
-      backdrop-filter: blur(12px); 
-      -webkit-backdrop-filter: blur(12px);
-      border-top: 1px solid rgba(255,255,255,0.3); 
-      z-index: 1030; 
-      padding: 15px 0; 
-      box-shadow: 0 -10px 30px rgba(0,0,0,0.05); 
-    }
-    
-    /* Mobile Adjustments (App-like Bottom Navigation) */
+    .sticky-footer { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(255,255,255,0.3); z-index: 1030; padding: 15px 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.05); }
     @media (max-width: 768px) {
-      body { padding-bottom: 85px; } /* Ruang aman ekstra agar tabel tidak terpotong */
-      
-      .sticky-footer { 
-        padding: 8px 5px; 
-        border-radius: 20px 20px 0 0;
-        background: rgba(255, 255, 255, 0.98);
-        box-shadow: 0 -5px 25px rgba(0,0,0,0.1);
-      }
-      
-      .footer-actions { 
-        flex-direction: row !important; 
-        justify-content: space-around !important; 
-        width: 100%; 
-        gap: 0;
-      }
-      
-      /* Mengubah tombol pill menjadi tab ikon aplikasi */
-      .footer-actions .btn { 
-        width: 32%; 
-        display: flex; 
-        flex-direction: column; 
-        align-items: center; 
-        background: transparent !important; 
-        border: none !important; 
-        box-shadow: none !important;
-        padding: 5px 0;
-        transition: transform 0.2s ease;
-      }
-      
-      .footer-actions .btn i { 
-        font-size: 1.4rem; 
-        margin: 0 0 4px 0 !important; 
-      }
-      
-      .footer-actions .btn span.d-inline { 
-        font-size: 0.65rem; 
-        font-weight: 700;
-        letter-spacing: 0.5px;
-      }
-
-      /* Mewarnai ikon sesuai fungsi agar tetap cantik di mobile */
+      body { padding-bottom: 85px; }
+      .sticky-footer { padding: 8px 5px; border-radius: 20px 20px 0 0; background: rgba(255, 255, 255, 0.98); box-shadow: 0 -5px 25px rgba(0,0,0,0.1); }
+      .footer-actions { flex-direction: row !important; justify-content: space-around !important; width: 100%; gap: 0; }
+      .footer-actions .btn { width: 32%; display: flex; flex-direction: column; align-items: center; background: transparent !important; border: none !important; box-shadow: none !important; padding: 5px 0; transition: transform 0.2s ease; }
+      .footer-actions .btn i { font-size: 1.4rem; margin: 0 0 4px 0 !important; }
+      .footer-actions .btn span.d-inline { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.5px; }
       .footer-actions .btn-primary { color: #0d6efd !important; }
       .footer-actions .btn-success { color: #198754 !important; }
       .footer-actions .btn-danger { color: #dc3545 !important; }
       .footer-actions .btn-dark { color: #000000 !important; }
-      
-      /* Animasi saat ditekan di layar sentuh */
       .footer-actions .btn:active { transform: scale(0.9); opacity: 0.7; }
     }
   </style>
 </head>
 <body>
-
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top py-2">
     <div class="container-fluid px-4 d-flex justify-content-between align-items-center">
       <a class="navbar-brand fw-bold text-gold d-flex align-items-center" href="#">
@@ -137,24 +56,18 @@
         <span class="d-inline d-sm-none text-white">STOCK OPNAME</span>
       </a>
       <span class="text-white" id="tanggal-hari ini"></span>
-      
     </div>
   </nav>
-
   <div class="container-fluid px-2 px-md-4 mt-3">
-    
     <div class="card p-2 p-md-4">
       <h4 class="fw-bold mb-1 text-dark"><i class="fas fa-chart-line text-primary me-2"></i>Barang Habis Pakai</h4>
       <p class="text-muted small mb-3">Kelola mutasi persediaan barang secara cerdas dan otomatis.</p>
-      
       <ul class="nav nav-tabs mb-3" id="mainTabs" role="tablist">
         <li class="nav-item"><button class="nav-link active" id="tab-beli" data-bs-toggle="tab" data-bs-target="#pane-beli" type="button"><i class="fas fa-file-circle-plus me-2"></i>1. Barang Masuk</button></li>
         <li class="nav-item"><button class="nav-link" id="tab-pakai" data-bs-toggle="tab" data-bs-target="#pane-pakai" type="button"><i class="fas fa-file-circle-minus me-2"></i>2. Pemakaian</button></li>
         <li class="nav-item"><button class="nav-link" id="tab-laporan" data-bs-toggle="tab" data-bs-target="#pane-laporan" type="button"><i class="fas fa-chart-pie me-2"></i>3. Rekapitulasi</button></li>
       </ul>
-
       <div class="tab-content" id="mainTabsContent">
-        
         <div class="tab-pane fade show active" id="pane-beli">
           <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
             <span class="small text-muted"><i class="fas fa-lightbulb text-warning me-1"></i>Klik pada teks di tabel untuk edit manual jika PDF meleset.</span>
@@ -185,7 +98,6 @@
             </table>
           </div>
         </div>
-
         <div class="tab-pane fade" id="pane-pakai">
           <div class="alert alert-primary bg-primary bg-opacity-10 border-0 py-2 small d-flex align-items-center rounded-3">
             <i class="fas fa-info-circle fa-lg text-primary me-3"></i>
@@ -211,7 +123,6 @@
             </table>
           </div>
         </div>
-
         <div class="tab-pane fade" id="pane-laporan">
           <div class="row text-center mb-4 mt-2 g-3">
             <div class="col-6 col-md-3"><div class="card bg-secondary bg-opacity-10 text-secondary p-3 border-0 shadow-sm rounded-4"><h6 class="text-uppercase fw-bold mb-1" style="font-size:0.75rem;">Saldo Awal</h6><h4 id="rekapAwal" class="mb-0">Rp 0</h4></div></div>
@@ -221,49 +132,39 @@
           </div>
           <p class="text-center text-muted small mt-4"><i class="fas fa-shield-alt text-success me-1"></i>Data aman di memori. Gunakan menu di bawah untuk menyimpan atau mencetak.</p>
         </div>
-
       </div>
     </div>
   </div>
-
   <footer class="sticky-footer">
     <div class="container-fluid px-2 px-md-4 d-flex flex-wrap justify-content-between align-items-center">
-      
       <div class="footer-status text-muted small fw-bold d-none d-md-block" id="statusKerja">
         <i class="fas fa-check-circle text-success me-1"></i>Sistem Siap
       </div>
-      
       <div class="d-flex footer-actions ms-auto">
         <input type="file" id="inputFileMaster" accept=".xlsx, application/pdf" hidden>
-        
         <button class="btn btn-primary shadow-sm rounded-pill px-4" onclick="document.getElementById('inputFileMaster').click()">
           <i class="fas fa-file-import me-md-2"></i>
           <span class="d-none d-md-inline">Impor File</span>
           <span class="d-inline d-md-none text-uppercase">Impor</span>
         </button>
-        
         <button class="btn btn-success shadow-sm rounded-pill px-4 ms-md-2" onclick="simpanExcelMaster()">
           <i class="fas fa-file-excel me-md-2"></i>
           <span class="d-none d-md-inline">Simpan Excel</span>
           <span class="d-inline d-md-none text-uppercase">Simpan</span>
         </button>
-        
         <button class="btn btn-danger shadow-sm rounded-pill px-4 ms-md-2" onclick="bukaModalCetak()" id="btnCetakPDF">
           <i class="fas fa-file-pdf me-md-2"></i>
           <span class="d-none d-md-inline">Cetak PDF</span>
           <span class="d-inline d-md-none text-uppercase">Cetak</span>
         </button>
-
         <button class="btn btn-dark shadow-sm rounded-pill px-4 ms-md-2" data-bs-toggle="modal" data-bs-target="#modalProfil">
           <i class="fas fa-gear me-md-2"></i>
           <span class="d-none d-md-inline">Profil</span>
           <span class="d-inline d-md-none text-uppercase">Profil</span>
         </button>
       </div>
-
     </div>
   </footer>
-
   <div class="modal fade" id="modalOpsiExcel" tabindex="-1" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg rounded-4">
@@ -287,7 +188,6 @@
       </div>
     </div>
   </div>
-
   <div class="modal fade" id="modalProfil" tabindex="-1">
     <div class="modal-dialog modal-lg">
       <div class="modal-content border-0 shadow-lg rounded-4">
@@ -309,9 +209,7 @@
               <label class="form-label small fw-bold">Alamat Sekolah (untuk Kop Surat)</label>
               <input type="text" id="prof_Alamat" class="form-control form-control-sm shadow-sm" placeholder="Dusun Sa Asa, Desa Tampojung Tenggina, Kec. Waru, Kode pos 69353">
             </div>
-            
             <hr class="my-3 border-secondary opacity-25">
-            
             <div class="col-md-6">
               <label class="form-label small fw-bold text-primary"><i class="fas fa-user-tie me-1"></i>Kepala Sekolah</label>
               <input type="text" id="prof_NamaKepsek" class="form-control form-control-sm mb-2 shadow-sm" placeholder="Nama Kepala Sekolah">
@@ -331,7 +229,6 @@
       </div>
     </div>
   </div>
-
   <div class="modal fade" id="modalCetakPDF" tabindex="-1" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg rounded-4">
@@ -361,21 +258,12 @@
       </div>
     </div>
   </div>
-
   <div id="hiddenPdfData" class="d-none"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  // 1. INIT STATE & LIBRARIES
   pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-  
-  let appState = {
-    periode: "",
-    saldoAwal: [], 
-    pembelian: [], 
-    pemakaian: {}  
-  };
-
+  let appState = { periode: "", saldoAwal: [], pembelian: [], pemakaian: {} };
   let fileExcelTemp = null; 
   const inputProfil = ["prof_NPSN", "prof_NamaSekolah", "prof_Alamat", "prof_NamaKepsek", "prof_NipKepsek", "prof_NoSkKepsek", "prof_TglSkKepsek", "prof_NamaPengurus", "prof_NipPengurus", "prof_NoSkPengurus", "prof_TglSkPengurus"];
   
@@ -385,13 +273,12 @@
       if (savedData) document.getElementById(id).value = savedData;
       document.getElementById(id).addEventListener("input", function() { localStorage.setItem(id, this.value); });
     });
+    tampilkanTanggal();
   };
 
-  // 2. INPUT HANDLER (MEMBACA FILE)
   document.getElementById('inputFileMaster').addEventListener('change', function(e) {
     if (e.target.files.length === 0) return;
     let file = e.target.files[0];
-    
     if (file.type === 'application/pdf') {
       document.getElementById('statusKerja').innerHTML = `<i class="fas fa-spinner fa-spin text-primary me-1"></i>Membaca PDF...`;
       startPdfExtraction(file);
@@ -404,22 +291,17 @@
     this.value = null; 
   });
 
-  // 3. LOGIKA IMPOR EXCEL (ESTAFET)
   async function prosesImporExcel(tipe) {
     bootstrap.Modal.getInstance(document.getElementById('modalOpsiExcel')).hide();
     document.getElementById('statusKerja').innerHTML = `<i class="fas fa-spinner fa-spin text-primary me-1"></i>Memuat Excel...`;
-    
     try {
       const wb = new ExcelJS.Workbook();
       await wb.xlsx.load(await fileExcelTemp.arrayBuffer());
-      
       const wsAwal = wb.getWorksheet('SALDO AWAL');
       const wsBeli = wb.getWorksheet('PEMBELIAN BARU');
       const wsPakai = wb.getWorksheet('PEMAKAIAN');
       const wsSisa = wb.getWorksheet('SISA STOK');
-
       if (!wsSisa) throw new Error("Bukan file Master BOSP yang valid.");
-
       if (tipe === 'saldo_awal') {
         appState.saldoAwal = []; appState.pembelian = []; appState.pemakaian = {};
         wsSisa.eachRow((row, rowNum) => {
@@ -438,7 +320,6 @@
         if(wsPakai) wsPakai.eachRow((row, i) => { if(i>1) appState.pemakaian[row.getCell(1).value.toString()] = { tglPakai: row.getCell(2).value ? row.getCell(2).value.toString() : "", jmlPakai: parseInt(row.getCell(3).value) || 0 }; });
         document.getElementById('statusKerja').innerHTML = `<i class="fas fa-check-circle text-success me-1"></i>Data Lanjutan Dimuat`;
       }
-      
       renderTabelPembelian();
       renderTabelPemakaian();
     } catch (err) {
@@ -446,7 +327,6 @@
     }
   }
 
-  // 4. EKSTRAKSI PDF MESIN LAMA (ARKAS)
   function startPdfExtraction(file) {
     const fileReader = new FileReader();
     fileReader.onload = function() {
@@ -488,29 +368,20 @@
     if (namaMatch) { document.getElementById('prof_NamaSekolah').value = namaMatch[1].trim(); localStorage.setItem("prof_NamaSekolah", namaMatch[1].trim()); }
     let bulanMatch = textGabungan.match(/BULAN\s*:\s*([A-Za-z]+)\s*TAHUN\s*:\s*(\d{4})/i); 
     if (bulanMatch) appState.periode = `${bulanMatch[1].toUpperCase()} ${bulanMatch[2]}`;
-    // --- LOGIKA EKSTRAKSI NIP DAN NAMA OTOMATIS DARI PDF ---
     let nipMatches = [...textGabungan.matchAll(/NIP\.?\s*(\d{18})/gi)];
     if (nipMatches.length >= 2) {
       let nip1 = nipMatches[0][1];
       let nip2 = nipMatches[1][1];
-      
-      // Masukkan NIP ke input dan simpan ke memori browser
       document.getElementById('prof_NipKepsek').value = nip1; 
       localStorage.setItem("prof_NipKepsek", nip1);
       document.getElementById('prof_NipPengurus').value = nip2; 
       localStorage.setItem("prof_NipPengurus", nip2);
-
-      // Cari baris teks di PDF yang memuat kedua NIP tersebut
       for (let i = 1; i < fullTextLines.length; i++) {
         if (fullTextLines[i].includes(nip1) && fullTextLines[i].includes(nip2)) {
-          // Biasanya, baris tepat di atas NIP adalah baris yang berisi Nama
           let namaLine = fullTextLines[i-1].trim();
-          
           if (namaLine && !namaLine.includes("Kepala Sekolah") && !namaLine.includes("Menyetujui")) {
              let words = namaLine.split(" "); 
              let splitIdx = Math.floor(words.length / 2); 
-             
-             // Logika membelah 2 nama (Kiri: Kepsek, Kanan: Bendahara) berdasarkan koma gelar
              for (let j = 1; j < words.length - 1; j++) { 
                if (words[j-1].includes(",")) { 
                  let k = j; 
@@ -519,32 +390,25 @@
                  break; 
                } 
              }
-             
              let namaKepsek = words.slice(0, splitIdx).join(" ");
              let namaBend = words.slice(splitIdx).join(" ");
-
-             // Masukkan Nama ke form Profil dan simpan ke memori otomatis
              document.getElementById('prof_NamaKepsek').value = namaKepsek;
              localStorage.setItem("prof_NamaKepsek", namaKepsek);
-             
              document.getElementById('prof_NamaPengurus').value = namaBend;
              localStorage.setItem("prof_NamaPengurus", namaBend);
           }
-          break; // Hentikan pencarian setelah nama ditemukan
+          break;
         }
       }
     } else if (nipMatches.length === 1) {
-      // Berjaga-jaga jika PDF hanya memuat 1 NIP (Hanya Kepsek)
       document.getElementById('prof_NipKepsek').value = nipMatches[0][1]; 
       localStorage.setItem("prof_NipKepsek", nipMatches[0][1]);
     }
-
     let blocks = [], currentBlock = [], blockHasDate = false, inFooterArea = false; 
     fullTextLines.forEach(line => {
       let cleanLine = line.trim(); if (cleanLine === "") return;
       if (/Jumlah\s*Rp/i.test(cleanLine) || cleanLine.includes("Menyetujui") || /NIP\.\s*\d+/.test(cleanLine) || cleanLine.includes("Kepala Sekolah") || cleanLine.includes("Bendahara")) inFooterArea = true;
       if (inFooterArea) return; 
-
       let isJunk = false;
       if (/REKAPITULASI REALISASI|BULAN\s*:\s*[A-Z]+\s*TAHUN|NPSN\s*:|Nama Sekolah\s*:|Desa\/Kecamatan\s*:|Kabupaten\s*\/\s*Kota|Provinsi\s*:|Sumber Dana\s*:|BHP.*NPSN.*Halaman|Halaman\s*\d+\s*dari/i.test(cleanLine)) isJunk = true;
       const kataTabel = ["Tanggal", "Kode Rekening", "Kode", "Kegiatan", "No.", "Bukti", "Uraian", "ID Barang", "Jumlah", "Barang", "Harga", "Satuan", "Realisasi", "BHP", "BOSP", "BOSP Reguler", ":"];
@@ -554,20 +418,16 @@
       let matchCount = ["Tanggal", "Kode Rekening", "ID Barang", "Uraian", "Realisasi", "Kegiatan", "Bukti", "Satuan", "Jumlah", "Harga"].filter(kw => new RegExp(kw, "i").test(cleanLine)).length;
       if (matchCount >= 3) isJunk = true; 
       if (isJunk) return; 
-
       let lineHasDate = /\d{2}-\d{2}-\d{4}/.test(cleanLine);
       let triggerNewBlock = lineHasDate || /^\d{2}\.\d{2}\.\d{2}/.test(cleanLine) || /^1\.\d\.\d{2}\./.test(cleanLine); 
       if (triggerNewBlock && blockHasDate) { blocks.push(currentBlock); currentBlock = [cleanLine]; blockHasDate = lineHasDate; } 
       else { currentBlock.push(cleanLine); if (lineHasDate) blockHasDate = true; }
     });
     if (currentBlock.length > 0) blocks.push(currentBlock);
-
     appState.pembelian = []; 
-    
     blocks.forEach(block => {
       let row = { tglBku: "", tglNota: "", kegiatan: "", rekening: "", bukti: "", idBarang: "", uraian: "", jml: 0, harga: 0, realisasi: 0 };
       let leftoverTokens = [], idBarangTokens = [];
-      
       block.join(" ").replace(/\s+/g, " ").split(" ").forEach(token => {
         if (!row.tglBku && /^\d{2}-\d{2}-\d{4}$/.test(token)) { row.tglBku = token; row.tglNota = token; }
         else if (!row.kegiatan && /^\d{2}\.\d{2}\.\d{2}/.test(token)) row.kegiatan = token;
@@ -577,7 +437,6 @@
         else leftoverTokens.push(token);
       });
       row.idBarang = idBarangTokens.join("").trim(); 
-
       let moneyIndices = [];
       for (let i = leftoverTokens.length - 1; i >= 0; i--) {
         if (/^\d{1,3}(\.\d{3})*(,\d{2})?$/.test(leftoverTokens[i])) {
@@ -593,16 +452,13 @@
       row.uraian = leftoverTokens.join(" ").trim();
       if (row.tglBku && row.rekening) appState.pembelian.push(row);
     });
-
     document.getElementById('statusKerja').innerHTML = `<i class="fas fa-check-circle text-success me-1"></i>PDF Berhasil Diekstrak`;
     renderTabelPembelian(); renderTabelPemakaian();
   }
 
-  // 5. RENDER TABEL BARANG MASUK (DENGAN EDIT MANUAL)
   function renderTabelPembelian() {
     const tbody = document.querySelector("#tabelBeli tbody");
     tbody.innerHTML = "";
-    
     appState.saldoAwal.forEach((item) => {
       let tr = document.createElement("tr");
       tr.classList.add("bg-secondary", "bg-opacity-10");
@@ -621,7 +477,6 @@
       `;
       tbody.appendChild(tr);
     });
-
     appState.pembelian.forEach((item, index) => {
       let tr = document.createElement("tr");
       let editClass = "bg-white border-primary border-opacity-25"; 
@@ -656,19 +511,12 @@
     renderTabelPembelian(); renderTabelPemakaian();
   }
   window.hapusBeli = function(index) { if(confirm("Yakin ingin menghapus baris ini?")) { appState.pembelian.splice(index, 1); renderTabelPembelian(); renderTabelPemakaian(); } }
-  // FITUR: Memindahkan baris ke atas atau ke bawah
   window.pindahBarisBeli = function(index, arah) {
-    // arah bernilai -1 (ke atas) atau 1 (ke bawah)
     let targetIndex = index + arah;
-    
-    // Pastikan target index tidak melebihi batas jumlah data
     if (targetIndex >= 0 && targetIndex < appState.pembelian.length) {
-      // Menukar posisi data di dalam memori (array)
       let sementara = appState.pembelian[index];
       appState.pembelian[index] = appState.pembelian[targetIndex];
       appState.pembelian[targetIndex] = sementara;
-      
-      // Gambar ulang tabel agar perubahannya terlihat di layar
       renderTabelPembelian(); 
       renderTabelPemakaian();
     }
@@ -679,36 +527,28 @@
     let container = document.querySelector("#pane-beli .table-container"); if(container) container.scrollTop = container.scrollHeight;
   }
 
-  // 6. RENDER TABEL PEMAKAIAN (TGL OTOMATIS CERDAS)
   function renderTabelPemakaian() {
     const tbody = document.querySelector("#tabelPakai tbody");
     tbody.innerHTML = "";
-    
     let rekapStok = {}; 
     appState.saldoAwal.forEach(i => { let key = i.idBarang + "_" + i.harga; if (!rekapStok[key]) rekapStok[key] = { uraian: i.uraian, harga: i.harga, jmlTotal: 0 }; rekapStok[key].jmlTotal += i.jml; });
     appState.pembelian.forEach(i => { let key = i.idBarang + "_" + i.harga; if (!rekapStok[key]) rekapStok[key] = { uraian: i.uraian, harga: i.harga, jmlTotal: 0 }; rekapStok[key].jmlTotal += i.jml; });
-
     let totAwalRp = 0, totBeliRp = 0, totPakaiRp = 0, totSisaRp = 0;
     appState.saldoAwal.forEach(i => totAwalRp += (i.jml * i.harga)); appState.pembelian.forEach(i => totBeliRp += i.realisasi);
-
     Object.keys(rekapStok).forEach(key => {
       let dataStok = rekapStok[key];
       if (!appState.pemakaian[key]) appState.pemakaian[key] = { tglPakai: "", jmlPakai: 0 };
-      
       let pakaiData = appState.pemakaian[key];
       if (pakaiData.tglPakai === "") {
         let referensiBeli = appState.pembelian.filter(b => (b.idBarang + "_" + b.harga) === key);
         if (referensiBeli.length > 0) pakaiData.tglPakai = referensiBeli[0].tglBku;
         else if (appState.pembelian.length > 0) pakaiData.tglPakai = appState.pembelian[0].tglBku;
       }
-      
       let sisa = dataStok.jmlTotal - pakaiData.jmlPakai;
       let rpPakai = pakaiData.jmlPakai * dataStok.harga;
       totPakaiRp += rpPakai; totSisaRp += (sisa * dataStok.harga);
-
       let statusSisa = sisa < 0 ? "text-danger fw-bold" : "text-success fw-bold";
       let statusInput = sisa < 0 ? "bg-danger text-white" : "bg-warning bg-opacity-10";
-
       let tr = document.createElement("tr");
       tr.innerHTML = `
         <td contenteditable="true" class="text-center bg-white" oninput="updatePemakaian('${key}', 'tglPakai', this.innerText)">${pakaiData.tglPakai}</td>
@@ -721,7 +561,6 @@
       `;
       tbody.appendChild(tr);
     });
-
     document.getElementById("rekapAwal").innerText = "Rp " + totAwalRp.toLocaleString('id-ID');
     document.getElementById("rekapBeli").innerText = "Rp " + totBeliRp.toLocaleString('id-ID');
     document.getElementById("rekapPakai").innerText = "Rp " + totPakaiRp.toLocaleString('id-ID');
@@ -733,26 +572,20 @@
     else { appState.pemakaian[key].tglPakai = value.trim(); }
   }
 
-  // 7. EKSPOR EXCEL MASTER
   async function simpanExcelMaster() {
     if (appState.pembelian.length === 0 && appState.saldoAwal.length === 0) return alert("Belum ada data untuk diekspor!");
     const wb = new ExcelJS.Workbook();
-    
     const wsAwal = wb.addWorksheet('SALDO AWAL'); wsAwal.addRow(["ID Barang", "Uraian", "Kode Rekening", "Harga Satuan", "Jumlah Awal"]);
     appState.saldoAwal.forEach(i => wsAwal.addRow([i.idBarang, i.uraian, i.rekening, i.harga, i.jml]));
-
     const wsBeli = wb.addWorksheet('PEMBELIAN BARU'); wsBeli.addRow(["Tanggal BKU", "Tanggal Nota", "Kode Kegiatan", "Kode Rekening", "No. Bukti", "ID Barang", "Uraian", "Jumlah Beli", "Harga Satuan", "Total Realisasi"]);
     appState.pembelian.forEach(i => wsBeli.addRow([i.tglBku, i.tglNota, i.kegiatan, i.rekening, i.bukti, i.idBarang, i.uraian, i.jml, i.harga, i.realisasi]));
-
     const wsPakai = wb.addWorksheet('PEMAKAIAN'); wsPakai.addRow(["ID_Harga (Kunci)", "Tanggal Pakai", "Jumlah Pakai"]);
     Object.keys(appState.pemakaian).forEach(key => { wsPakai.addRow([key, appState.pemakaian[key].tglPakai, appState.pemakaian[key].jmlPakai]); });
-
     const wsSisa = wb.addWorksheet('SISA STOK'); wsSisa.addRow(["ID Barang", "Uraian", "Kode Rekening", "Harga Satuan", "Sisa Jumlah"]);
     let rekapAkhir = {};
     appState.saldoAwal.forEach(i => { let k = i.idBarang+"_"+i.harga; if(!rekapAkhir[k]) rekapAkhir[k]={id:i.idBarang, ur:i.uraian, rek:i.rekening, hr:i.harga, jml:0}; rekapAkhir[k].jml += i.jml; });
     appState.pembelian.forEach(i => { let k = i.idBarang+"_"+i.harga; if(!rekapAkhir[k]) rekapAkhir[k]={id:i.idBarang, ur:i.uraian, rek:i.rekening, hr:i.harga, jml:0}; rekapAkhir[k].jml += i.jml; });
     Object.keys(rekapAkhir).forEach(key => { let pakai = appState.pemakaian[key] ? appState.pemakaian[key].jmlPakai : 0; let sisaHitung = rekapAkhir[key].jml - pakai; if(sisaHitung > 0) wsSisa.addRow([rekapAkhir[key].id, rekapAkhir[key].ur, rekapAkhir[key].rek, rekapAkhir[key].hr, sisaHitung]); });
-
     const blob = new Blob([await wb.xlsx.writeBuffer()], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     let namaSekolah = document.getElementById("prof_NamaSekolah").value || "Sekolah";
     let bulanArr = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
@@ -760,7 +593,7 @@
     if (appState.pembelian.length > 0) {
       let tglBku = appState.pembelian[0].tglBku;
       if (tglBku && tglBku.length === 10) {
-        let parts = tglBku.split("-"); // Memecah format DD-MM-YYYY
+        let parts = tglBku.split("-");
         tglRef = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
       }
     }
@@ -768,7 +601,6 @@
     saveAs(blob, `Data_SO_${periodeTeks}_${namaSekolah}.xlsx`);
   }
 
-  // 8. LOGIKA CETAK PDF & MODAL PRE-PRINT
   function bukaModalCetak() {
     if (appState.pembelian.length === 0 && appState.saldoAwal.length === 0) return alert("Belum ada data untuk dicetak.");
     let savedNoBAST = localStorage.getItem("cetak_NoBAST"); let savedTglBAST = localStorage.getItem("cetak_TglBAST");
@@ -791,40 +623,33 @@
   async function eksekusiCetakPDF() {
     let btn = document.getElementById('btnEksekusiCetak'); let originalText = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Merakit PDF...'; btn.disabled = true;
-
     try {
       const { jsPDF } = window.jspdf;
       let noBAST = document.getElementById("cetak_NoBAST").value || "........................";
       let tglInputBAST = document.getElementById("cetak_TglBAST").value;
       localStorage.setItem("cetak_NoBAST", noBAST === "........................" ? "" : noBAST); localStorage.setItem("cetak_TglBAST", tglInputBAST);
-
       let teksNpsn = document.getElementById('prof_NPSN').value || "-"; let teksSekolah = document.getElementById('prof_NamaSekolah').value || "-"; let alamatSekolah = document.getElementById('prof_Alamat').value || "-";
       let namaKepsek = document.getElementById('prof_NamaKepsek').value || "...................................."; let nipKepsek = document.getElementById('prof_NipKepsek').value || "...................................."; let noSkKepsek = document.getElementById('prof_NoSkKepsek').value || "........................"; let tglSkKepsek = formatTglIndo(document.getElementById('prof_TglSkKepsek').value);
       let namaBendahara = document.getElementById('prof_NamaPengurus').value || "...................................."; let nipBendahara = document.getElementById('prof_NipPengurus').value || "...................................."; let noSkBendahara = document.getElementById('prof_NoSkPengurus').value || "........................"; let tglSkBendahara = formatTglIndo(document.getElementById('prof_TglSkPengurus').value);
       let tanggalTtd = formatTglIndo(tglInputBAST); if(tanggalTtd === "........................") tanggalTtd = "........................ 2026";
-
       const formatUang = (angka) => (angka || 0).toLocaleString('id-ID');
       let dictLaporan = {}; 
       appState.saldoAwal.forEach(i => { let k = i.idBarang + "_" + i.harga; if(!dictLaporan[k]) dictLaporan[k] = { id: i.idBarang, ur: i.uraian, rek: i.rekening, hr: i.harga, jA:0, tA:0, jB:0, tB:0, tgl:[], bku:[] }; dictLaporan[k].jA += i.jml; dictLaporan[k].tA += (i.jml * i.harga); });
       appState.pembelian.forEach(i => { let k = i.idBarang + "_" + i.harga; if(!dictLaporan[k]) dictLaporan[k] = { id: i.idBarang, ur: i.uraian, rek: i.rekening, hr: i.harga, jA:0, tA:0, jB:0, tB:0, tgl:[], bku:[] }; dictLaporan[k].jB += i.jml; dictLaporan[k].tB += i.realisasi; if(!dictLaporan[k].tgl.includes(i.tglBku)) dictLaporan[k].tgl.push(i.tglBku); if(!dictLaporan[k].bku.includes(i.bukti)) dictLaporan[k].bku.push(i.bukti); });
-
       let barisMutasiHTML = "", barisSisaHTML = ""; let rekapRekening = {}; let counterMutasi = 1, counterSisa = 1; let grandJA = 0, grandJB = 0, grandJP = 0, grandJS = 0; 
       Object.keys(dictLaporan).forEach(key => {
         let d = dictLaporan[key]; let pakaiData = appState.pemakaian[key] || { jmlPakai: 0, tglPakai: "-" };
         let pakaiRp = pakaiData.jmlPakai * d.hr; let sisaJml = (d.jA + d.jB) - pakaiData.jmlPakai; let sisaRp = sisaJml * d.hr;
         grandJA += d.tA; grandJB += d.tB; grandJP += pakaiRp; grandJS += sisaRp; rekapRekening[d.rek] = (rekapRekening[d.rek] || 0) + sisaRp;
         let strTgl = d.tgl.length > 0 ? d.tgl.join(", ") : "-"; let strBku = d.bku.length > 0 ? d.bku.join(", ") : "-";
-
         barisMutasiHTML += `<tr><td>${counterMutasi++}</td><td>${d.rek}</td><td>${d.id}</td><td>${strBku}</td><td>${d.ur}</td><td>${formatUang(d.jA)}</td><td>${formatUang(d.hr)}</td><td>${formatUang(d.tA)}</td><td>${strTgl}</td><td>${formatUang(d.jB)}</td><td>${formatUang(d.hr)}</td><td>${formatUang(d.tB)}</td><td>${strTgl}</td><td>${strBku}</td><td>${pakaiData.tglPakai}</td><td>${formatUang(pakaiData.jmlPakai)}</td><td>${formatUang(d.hr)}</td><td>${formatUang(pakaiRp)}</td><td>${formatUang(sisaJml)}</td><td>${formatUang(d.hr)}</td><td>${formatUang(sisaRp)}</td></tr>`;
         if (sisaJml > 0) barisSisaHTML += `<tr><td>${counterSisa++}</td><td>${d.rek}</td><td>${d.id}</td><td>${d.ur}</td><td>${formatUang(sisaJml)}</td><td>${formatUang(d.hr)}</td><td>${formatUang(sisaRp)}</td></tr>`;
       });
-
       const templateHalaman2 = [ { kode: "5.1.02.01.01.0001", ur: "Belanja Bahan-Bahan Bangunan dan Konstruksi" }, { kode: "5.1.02.01.01.0002", ur: "Belanja Bahan-Bahan Kimia" }, { kode: "5.1.02.01.01.0004", ur: "Belanja Bahan-Bahan Bakar dan Pelumas" }, { kode: "5.1.02.01.01.0005", ur: "Belanja Bahan-Bahan Baku Praktek KBM" }, { kode: "5.1.02.01.01.0008", ur: "Belanja Bahan-Bahan/Bibit Tanaman" }, { kode: "5.1.02.01.01.0009", ur: "Belanja Bahan-Isi Tabung Pemadam Kebakaran" }, { kode: "5.1.02.01.01.0010", ur: "Belanja Bahan-Isi Tabung Gas" }, { kode: "5.1.02.01.01.0011", ur: "Belanja Bahan-Bahan/Bibit Ternak/Bibit Ikan" }, { kode: "5.1.02.01.01.0012", ur: "Belanja Bahan-Bahan Lainnya" }, { kode: "5.1.02.01.01.0013", ur: "Belanja Suku Cadang-Suku Cadang Alat Angkutan" }, { kode: "5.1.02.01.01.0016", ur: "Belanja Suku Cadang-Suku Cadang Alat Laboratorium" }, { kode: "5.1.02.01.01.0017", ur: "Belanja Suku Cadang-Suku Cadang Alat Pemancar" }, { kode: "5.1.02.01.01.0018", ur: "Belanja Suku Cadang-Suku Cadang Alat Studio dan Komunikasi" }, { kode: "5.1.02.01.01.0019", ur: "Belanja Suku Cadang-Suku Cadang Alat Pertanian" }, { kode: "5.1.02.01.01.0020", ur: "Belanja Suku Cadang-Suku Cadang Alat Bengkel" }, { kode: "5.1.02.01.01.0024", ur: "Belanja Alat/Bahan untuk Kegiatan Kantor-Alat Tulis Kantor" }, { kode: "5.1.02.01.01.0025", ur: "Belanja Alat/Bahan untuk Kegiatan Kantor- Kertas dan Cover" }, { kode: "5.1.02.01.01.0026", ur: "Belanja Alat/Bahan untuk Kegiatan Kantor- Bahan Cetak dan Penggandaan" }, { kode: "5.1.02.01.01.0027", ur: "Belanja Alat/Bahan untuk Kegiatan Kantor-Benda Pos" }, { kode: "5.1.02.01.01.0029", ur: "Belanja Alat/Bahan untuk Kegiatan Kantor-Bahan Komputer" }, { kode: "5.1.02.01.01.0030", ur: "Belanja Alat/Bahan untuk Kegiatan Kantor-Perabot Kantor" }, { kode: "5.1.02.01.01.0031", ur: "Belanja Alat/Bahan untuk Kegiatan Kantor-Alat Listrik" }, { kode: "5.1.02.01.01.0032", ur: "Belanja Alat/Bahan untuk Kegiatan Kantor-Perlengkapan Dinas" }, { kode: "5.1.02.01.01.0034", ur: "Belanja Alat/Bahan untuk Kegiatan Kantor- Perlengkapan Pendukung Olahraga" }, { kode: "5.1.02.01.01.0035", ur: "Belanja Alat/Bahan untuk Kegiatan Kantor- Suvenir/Cendera Mata" }, { kode: "5.1.02.01.01.0036", ur: "Belanja Alat/Bahan untuk Kegiatan Kantor-Alat/Bahan untuk Kegiatan Kantor Lainnya" }, { kode: "5.1.02.01.01.0037", ur: "Belanja Obat-Obat-Obatan" }, { kode: "5.1.02.01.01.0043", ur: "Belanja Natura dan Pakan-Natura" }, { kode: "5.1.02.01.01.0045", ur: "Belanja Natura dan Pakan-Natura dan Pakan Lainnya" }, { kode: "5.1.02.01.01.0064", ur: "Belanja Pakaian Dinas Lapangan (PDL)" }, { kode: "5.1.02.01.01.0066", ur: "Belanja Pakaian Dinas Upacara (PDU)" }, { kode: "5.1.02.01.01.0067", ur: "Belanja Pakaian Penyelamatan" }, { kode: "5.1.02.01.01.0069", ur: "Belanja Pakaian Teknik" }, { kode: "5.1.02.01.01.0071", ur: "Belanja Pakaian Kerja Laboratorium" }, { kode: "5.1.02.01.01.0072", ur: "Belanja Pakaian Kerja Bengkel" }, { kode: "5.1.02.01.01.0074", ur: "Belanja Pakaian Adat Daerah" }, { kode: "5.1.02.01.01.0075", ur: "Belanja Pakaian Batik Tradisional" }, { kode: "5.1.02.01.01.0076", ur: "Belanja Pakaian Olahraga" }, { kode: "5.1.02.01.01.0077", ur: "Belanja Pakaian Paskibraka" }, { kode: "5.1.02.01.02.0003", ur: "Belanja Komponen-Komponen Peralatan" }, { kode: "5.1.02.01.01.0053", ur: "Belanja Makanan dan Minuman Jamuan Tamu" }, { kode: "5.1.02.01.01.0052", ur: "Belanja Makanan dan Minuman Rapat" }, { kode: "5.1.02.01.01.0055", ur: "Belanja Makanan dan Minuman pada Fasilitas Pelayanan Urusan Pendidikan" } ];
       let barisLampiranHTML = ""; let noLampiran = 1; templateHalaman2.forEach(item => { let nilaiSisa = rekapRekening[item.kode] || 0; barisLampiranHTML += `<tr><td>${noLampiran++}</td><td>${item.kode}</td><td>${item.ur}</td><td>${formatUang(nilaiSisa)}</td></tr>`; });
       barisLampiranHTML += `<tr><td colspan="3">Jumlah</td><td>${formatUang(grandJS)}</td></tr>`;
       if (barisSisaHTML === "") barisSisaHTML = `<tr><td colspan="7">Tidak ada sisa persediaan (Habis)</td></tr>`; barisSisaHTML += `<tr><td colspan="6">Total Nilai Sisa Persediaan</td><td>${formatUang(grandJS)}</td></tr>`;
       barisMutasiHTML += `<tr><td colspan="5">Jumlah Total</td><td colspan="2"></td><td>${formatUang(grandJA)}</td><td colspan="3"></td><td>${formatUang(grandJB)}</td><td colspan="2"></td><td colspan="3"></td><td>${formatUang(grandJP)}</td><td colspan="2"></td><td>${formatUang(grandJS)}</td></tr>`;
-
       document.getElementById('hiddenPdfData').innerHTML = `<table class="table-mutasi-pdf"><thead><tr><th rowspan="2">No.</th><th rowspan="2">Kode Rekening</th><th rowspan="2">ID Barang</th><th rowspan="2">No Bukti</th><th rowspan="2">Uraian Barang</th><th colspan="3">Saldo Awal</th><th colspan="6">Pembelian</th><th colspan="4">Pemakaian</th><th colspan="3">Saldo Akhir</th></tr><tr><th>Jml</th><th>Harga</th><th>Total</th><th>Tgl Beli</th><th>Jml</th><th>Harga</th><th>Total</th><th>Tgl BKU</th><th>No BKU</th><th>Tgl Pakai</th><th>Jml</th><th>Harga</th><th>Total</th><th>Jml Sisa</th><th>Harga</th><th>Total Sisa</th></tr></thead><tbody>${barisMutasiHTML}</tbody></table><table class="table-lampiran-pdf"><thead><tr><th>No.</th><th>Kode Rekening</th><th>Uraian</th><th>Jumlah (Rp.)</th></tr></thead><tbody>${barisLampiranHTML}</tbody></table><table class="table-sisa-pdf"><thead><tr><th>No.</th><th>Kode Rekening</th><th>ID Barang</th><th>Nama / Uraian Barang</th><th>Jumlah Sisa</th><th>Harga Satuan</th><th>Total Nilai (Rp)</th></tr></thead><tbody>${barisSisaHTML}</tbody></table>`;
 
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' }); let lebarP1 = doc.internal.pageSize.width; let tglD = tglInputBAST ? new Date(tglInputBAST) : new Date(); let hariArr = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"]; let bulanArr = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
@@ -832,10 +657,8 @@
       let periodeMMYYYY = `${bulanArr[tglD.getMonth()]} ${tglD.getFullYear()}`;
       let hasLogo = false; try { let logoData = await getBase64Image("logo.png"); let tinggiTarget = 26; let rasio = logoData.asliLebar / logoData.asliTinggi; doc.addImage(logoData.base64, 'PNG', 15, 12, tinggiTarget * rasio, tinggiTarget); hasLogo = true; } catch (e) { }
       let centerX = hasLogo ? (lebarP1 / 2 + 13) : (lebarP1 / 2);
-
       doc.setFont("helvetica"); doc.setFontSize(12); doc.text("PEMERINTAH KABUPATEN PAMEKASAN", centerX, 18, { align: "center" }); 
       doc.setFont("helvetica", "bold"); doc.setFontSize(16); doc.text("DINAS PENDIDIKAN DAN KEBUDAYAAN", centerX, 25, { align: "center" }); doc.setFontSize(16); doc.text(teksSekolah.toUpperCase(), centerX, 32, { align: "center" }); doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.text(`Alamat: ${alamatSekolah}`, centerX, 37, { align: "center" }); doc.setLineWidth(0.8); doc.line(15, 42, lebarP1 - 15, 42); doc.setLineWidth(0.3); doc.line(15, 43.5, lebarP1 - 15, 43);
-      // doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.text("BERITA ACARA PEMERIKSAAN FISIK PERSEDIAAN", lebarP1 / 2, 55, { align: "center" }); doc.text(appState.periode, lebarP1 / 2, 60, { align: "center" }); 
       doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.text("BERITA ACARA PEMERIKSAAN FISIK PERSEDIAAN", lebarP1 / 2, 55, { align: "center" }); 
       doc.text(periodeTeks.toUpperCase(), lebarP1 / 2, 60, { align: "center" });
       doc.setFont("helvetica", "normal"); doc.setFontSize(11); doc.text(`Nomor : ${noBAST}`, lebarP1 / 2, 66, { align: "center" });
@@ -845,7 +668,6 @@
       doc.text("Nama\nNIP\nJabatan\nUnit Kerja", 20, 135, {lineHeightFactor: 1.5}); doc.text(`: ${namaBendahara}\n: ${nipBendahara.replace('NIP. ', '')}\n: Pengurus Barang\n: ${teksSekolah.toUpperCase()}`, 45, 135, {lineHeightFactor: 1.5});
       doc.text(`Yang berdasarkan Surat Keputusan Bupati Pamekasan Nomor: ${noSkBendahara} Tanggal ${tglSkBendahara}, ditugaskan sebagai pengurus barang.`, 15, 162, { maxWidth: lebarP1 - 30, align: "justify", lineHeightFactor: 1.5 });
       doc.text(`Telah melakukan pemeriksaan fisik barang persediaan (Stock Opname) yang dikuasai dan/atau berada dalam pengurusan kami. Hasil pemeriksaan fisik tersebut dituangkan dalam Lampiran Berita Acara ini.\n\nDemikian Berita Acara ini dibuat untuk dipergunakan sebagaimana mestinya.`, 15, 177, { maxWidth: lebarP1 - 30, align: "justify", lineHeightFactor: 1.5 });
-
       let finalYBAST = 210; let posKananBAST = lebarP1 - 80;
       doc.text("Mengetahui,", 25, finalYBAST); doc.text("Kepala Sekolah", 25, finalYBAST + 5); doc.setFont("helvetica", "bold"); doc.text(namaKepsek, 25, finalYBAST + 25); doc.setLineWidth(0.2); doc.line(25, finalYBAST + 26, 25 + doc.getTextWidth(namaKepsek), finalYBAST + 26); doc.setFont("helvetica", "normal"); doc.text(nipKepsek, 25, finalYBAST + 31);
       doc.text(`Pamekasan, ${tanggalTtd}`, posKananBAST, finalYBAST); doc.text("Pengurus Barang", posKananBAST, finalYBAST + 5); doc.setFont("helvetica", "bold"); doc.text(namaBendahara, posKananBAST, finalYBAST + 25); doc.line(posKananBAST, finalYBAST + 26, posKananBAST + doc.getTextWidth(namaBendahara), finalYBAST + 26); doc.setFont("helvetica", "normal"); doc.text(nipBendahara, posKananBAST, finalYBAST + 31);
@@ -879,47 +701,24 @@
     } catch (err) { alert("Gagal merakit PDF: " + err.message); } finally { btn.innerHTML = originalText; btn.disabled = false; }
   }
 
-  // HELPER FUNCTIONS
   function formatTglIndo(tglStr) { if (!tglStr) return "........................"; let d = new Date(tglStr); let bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]; return `${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`; }
   const getBase64Image = (url) => { return new Promise((resolve, reject) => { let img = new Image(); img.onload = () => { let canvas = document.createElement("canvas"); canvas.width = img.width; canvas.height = img.height; canvas.getContext("2d").drawImage(img, 0, 0); resolve({ base64: canvas.toDataURL("image/png"), asliLebar: img.width, asliTinggi: img.height }); }; img.onerror = error => reject(error); img.src = url; }); };
 
   document.getElementById('tab-pakai').addEventListener('click', renderTabelPemakaian); document.getElementById('tab-laporan').addEventListener('click', renderTabelPemakaian);
-</script>
 
+  function tampilkanTanggal() {
+    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const date = new Date();
+    document.getElementById('tanggal-hari ini').textContent = `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+  }
 
-
-
-
-<script>
-        function tampilkanTanggal() {
-            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-            const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-            
-            const date = new Date();
-            const dayName = days[date.getDay()];
-            const day = date.getDate();
-            const monthName = months[date.getMonth()];
-            const year = date.getFullYear();
-
-            // Format: Senin, 7 Juli 2026
-            const fullDate = `${dayName}, ${day} ${monthName} ${year}`;
-            
-            // Tampilkan pada elemen HTML
-            document.getElementById('tanggal-hari ini').textContent = fullDate;
-        }
-
-        // Jalankan fungsi saat halaman dimuat
-        tampilkanTanggal();
-
-        // ==========================================
-  // PROTEKSI HALAMAN
-  // ==========================================
   document.addEventListener('contextmenu', e => e.preventDefault());
   document.addEventListener('keydown', e => {
     if (e.key === 'F12' || e.keyCode === 123) e.preventDefault();
     if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j')) e.preventDefault();
     if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) e.preventDefault();
   });
-    </script>
+</script>
 </body>
 </html>
